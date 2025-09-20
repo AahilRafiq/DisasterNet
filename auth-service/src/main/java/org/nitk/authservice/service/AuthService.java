@@ -33,16 +33,25 @@ public class AuthService {
         return "Entry created";
     }
 
-    // Checks if a user exists using email + phone (simple check)
-    public String signin(UserDTO user) {
-        Record1<Integer> result = dsl.select(DSL.count())
+    public Long findUserIdByEmail(String email) {
+        Record1<Long> rec = dsl.select(field("id", Long.class))
                 .from(table("users"))
-                .where(field("email").eq(user.getEmail()))
-                .and(field("password").eq(user.getPassword()))
+                .where(field("email").eq(email))
+                .orderBy(field("id").desc())
+                .limit(1)
                 .fetchOne();
+        return rec != null ? rec.value1() : null;
+    }
 
-        int count = result != null && result.value1() != null ? result.value1() : 0;
-        return count > 0 ? "Sign-in successful" : "Sign-in failed";
+    public Long findUserIdByEmailAndPassword(String email, String password) {
+        Record1<Long> rec = dsl.select(field("id", Long.class))
+                .from(table("users"))
+                .where(field("email").eq(email))
+                .and(field("password").eq(password))
+                .orderBy(field("id").desc())
+                .limit(1)
+                .fetchOne();
+        return rec != null ? rec.get("id", Long.class) : null;
     }
 }
 
