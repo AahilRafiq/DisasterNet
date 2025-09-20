@@ -14,7 +14,7 @@ import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequ
 @SpringBootApplication
 public class GatewayApplication {
 
-    public static final String AUTH_URI = "http://httpbin.org:80"; // Replace with actual auth service URI
+    public static final String AUTH_URI = "http://localhost:5001"; // Replace with actual auth service URI
     public static final String NOTIF_URI = "https://reqres.in"; // Replace with actual notification service URI
 
     public static void main(String[] args) {
