@@ -4,7 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
+
+import jakarta.servlet.http.Cookie;
+import org.nitk.gateway.security.JwtService;
 
 import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.uri;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
@@ -14,8 +18,8 @@ import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequ
 @SpringBootApplication
 public class GatewayApplication {
 
-    public static final String AUTH_URI = "http://localhost:5001"; // Replace with actual auth service URI
-    public static final String NOTIF_URI = "https://reqres.in"; // Replace with actual notification service URI
+    public static final String AUTH_URI = "http://localhost:5001"; // auth-service URI
+    public static final String ALERT_URI = "https://reqres.in"; // placeholder for notifications service
 
     public static void main(String[] args) {
         SpringApplication.run(GatewayApplication.class, args);
@@ -30,19 +34,22 @@ public class GatewayApplication {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> notificationRouter() {
+    public RouterFunction<ServerResponse> alertRouter(JwtService jwtService) {
         return route()
-                .route(path("/notifications/**"), http())
-                .filter((req,next) -> {
-                    if(req.headers().firstHeader("damn") == null) {
+                .route(path("/alerts/**"), http())
+                .filter((req, next) -> {
+                    if (!isValidToken(req, jwtService)) {
                         return ServerResponse.status(401).build();
                     }
-
-                    // Any checks for auth can be done here
-
                     return next.handle(req);
                 })
-                .before(uri(NOTIF_URI))
+                .before(uri(ALERT_URI))
                 .build();
+    }
+
+    static boolean isValidToken(ServerRequest req, JwtService jwtService) {
+        Cookie jwtCookie = req.cookies().getFirst("jwt");
+        String token = jwtCookie != null ? jwtCookie.getValue() : null;
+        return jwtService.isValid(token);
     }
 }
