@@ -3,6 +3,7 @@ package org.nitk.authservice.service;
 import org.bson.Document;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.nitk.authservice.dto.UserDTO;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AuthService {
     }
 
     public String signup(UserDTO user) {
-        dsl.insertInto(table("users"))
+        Record inserted = dsl.insertInto(table("users"))
                 .columns(field("name"), field("email"), field("phone"), field("password"), field("role"))
                 .values(
                         user.getName(),
@@ -33,17 +34,20 @@ public class AuthService {
                         // Cast string to Postgres enum user_role
                         DSL.field("?::user_role", String.class, user.getRole().name())
                 )
-                .execute();
+                .returning(field("id", Long.class))
+                .fetchOne();
 
-        // Todo: insert UserID also
-        mongoCollections.getUserCollection()
-                .insertOne(new Document()
-                        .append("role", user.getRole().name())
-                        .append("location", new Document()
-                            .append("type", user.getLocation().getType())
-                            .append("coordinates", user.getLocation().getCoordinates())
-                        )
+        Long userId = inserted != null ? inserted.get(field("id", Long.class)) : null;
+
+        Document doc = new Document()
+                .append("userId", userId)
+                .append("role", user.getRole().name())
+                .append("location", new Document()
+                        .append("type", user.getLocation().getType())
+                        .append("coordinates", user.getLocation().getCoordinates())
                 );
+
+        mongoCollections.getUserCollection().insertOne(doc);
 
         return "Entry created";
     }
@@ -69,4 +73,3 @@ public class AuthService {
         return rec != null ? rec.get("id", Long.class) : null;
     }
 }
-
