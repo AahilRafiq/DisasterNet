@@ -20,7 +20,15 @@
     <modules>
         <module>auth-service</module>
         <module>gateway</module>
+        <module>common</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>

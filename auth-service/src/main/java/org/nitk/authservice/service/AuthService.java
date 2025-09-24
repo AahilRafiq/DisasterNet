@@ -4,11 +4,9 @@ import org.bson.Document;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
-import org.nitk.authservice.config.MongoCollections;
 import org.nitk.authservice.dto.UserDTO;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
+import org.nitk.common.mongo.MongoCollections;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
