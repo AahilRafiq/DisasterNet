@@ -6,16 +6,9 @@ public class UserDTO {
     private String phone;
     private UserRole role;
     private String password;
+    private LocationDTO location;
 
     public UserDTO() {}
-
-    public UserDTO(String name, String email,String password, String phone, UserRole role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.role = role;
-    }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -31,5 +24,8 @@ public class UserDTO {
 
     public UserRole getRole() { return role; }
     public void setRole(UserRole role) { this.role = role; }
+
+    public LocationDTO getLocation() { return location; }
+    public void setLocation(LocationDTO location) { this.location = location; }
 }
 

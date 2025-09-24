@@ -1,10 +1,14 @@
 package org.nitk.authservice.service;
 
+import org.bson.Document;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.impl.DSL;
+import org.nitk.authservice.config.MongoCollections;
 import org.nitk.authservice.dto.UserDTO;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -13,9 +17,11 @@ import static org.jooq.impl.DSL.table;
 public class AuthService {
 
     private final DSLContext dsl;
+    private final MongoCollections mongoCollections;
 
-    public AuthService(DSLContext dsl) {
+    public AuthService(DSLContext dsl, MongoCollections mongoCollections) {
         this.dsl = dsl;
+        this.mongoCollections = mongoCollections;
     }
 
     public String signup(UserDTO user) {
@@ -30,6 +36,17 @@ public class AuthService {
                         DSL.field("?::user_role", String.class, user.getRole().name())
                 )
                 .execute();
+
+        // Todo: insert UserID also
+        mongoCollections.getUserCollection()
+                .insertOne(new Document()
+                        .append("role", user.getRole().name())
+                        .append("location", new Document()
+                            .append("type", user.getLocation().getType())
+                            .append("coordinates", user.getLocation().getCoordinates())
+                        )
+                );
+
         return "Entry created";
     }
 
