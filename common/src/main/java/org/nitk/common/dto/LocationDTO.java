@@ -1,4 +1,4 @@
-package org.nitk.authservice.dto;
+package org.nitk.common.dto;
 
 import java.util.List;
 

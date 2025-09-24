@@ -1,5 +1,7 @@
 package org.nitk.authservice.dto;
 
+import org.nitk.common.dto.LocationDTO;
+
 public class UserDTO {
     private String name;
     private String email;

@@ -18,8 +18,8 @@ import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequ
 @SpringBootApplication
 public class GatewayApplication {
 
-    public static final String AUTH_URI = "http://localhost:5001"; // auth-service URI
-    public static final String ALERT_URI = "https://reqres.in"; // placeholder for notifications service
+    public static final String AUTH_URI = "http://localhost:5001";
+    public static final String ALERT_URI = "http://localhost:5002";
 
     public static void main(String[] args) {
         SpringApplication.run(GatewayApplication.class, args);
