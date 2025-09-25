@@ -41,6 +41,8 @@ public class AuthService {
 
         Document doc = new Document()
                 .append("userId", userId)
+                .append("email", user.getEmail())
+                .append("phone", user.getPhone())
                 .append("role", user.getRole().name())
                 .append("location", new Document()
                         .append("type", user.getLocation().getType())

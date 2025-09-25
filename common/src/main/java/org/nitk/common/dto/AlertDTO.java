@@ -1,6 +1,4 @@
-package org.nitk.alertservice.dto;
-
-import org.nitk.common.dto.LocationDTO;
+package org.nitk.common.dto;
 
 public class AlertDTO {
     private String message;
