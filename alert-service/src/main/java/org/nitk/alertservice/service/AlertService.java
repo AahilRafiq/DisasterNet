@@ -1,5 +1,7 @@
 package org.nitk.alertservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
 import org.nitk.common.dto.AlertDTO;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AlertService {
     private final MongoCollections mongoCollections;
+    private final RMQService rmqService;
 
-    public AlertService(MongoCollections mongoCollections) {
+    public AlertService(MongoCollections mongoCollections, RMQService rmqService) {
+        this.rmqService = rmqService;
         this.mongoCollections = mongoCollections;
     }
 
@@ -54,10 +58,15 @@ public class AlertService {
             dto.setPhone(doc.getString("phone"));
             dto.setRole(doc.getString("role"));
             dto.setAlertId(alertId);
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                System.out.println("Sending notification : " + dto.getUserId() + ", " + dto.getEmail() + ", " + dto.getPhone() + ", " + dto.getRole() + ", " + dto.getAlertId());
+                byte[] messageData = mapper.writeValueAsBytes(dto);
+                rmqService.publishNotification(messageData);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
 
-            System.out.println("Prepared notification DTO: " + dto.getUserId() + ", " + dto.getEmail() + ", " + dto.getPhone() + ", " + dto.getRole() + ", " + dto.getAlertId());
         });
-
-        // Todo: Publish to RabbitMQ
     }
 }
