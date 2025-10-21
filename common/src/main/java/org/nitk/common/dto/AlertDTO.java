@@ -1,12 +1,18 @@
 package org.nitk.common.dto;
 
+import org.bson.types.ObjectId;
+
 public class AlertDTO {
+    private ObjectId id;
     private String message;
     private String severity;
     private LocationDTO location;
     private Long distance; // in meters
 
     public AlertDTO() {}
+
+    public ObjectId getId() { return id; }
+    public void setId(ObjectId id) { this.id = id; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }

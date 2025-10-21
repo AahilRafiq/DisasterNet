@@ -31,8 +31,8 @@ public class AuthService {
                         user.getEmail(),
                         user.getPhone(),
                         user.getPassword(),
-                        // Cast string to Postgres enum user_role
-                        DSL.field("?::user_role", String.class, user.getRole().name())
+                        // Cast string to Postgres enum role
+                        DSL.field("?::role", String.class, user.getRole().name())
                 )
                 .returning(field("id", Long.class))
                 .fetchOne();
