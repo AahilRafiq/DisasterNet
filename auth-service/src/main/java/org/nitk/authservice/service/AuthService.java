@@ -6,6 +6,7 @@ import org.jooq.Record1;
 import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.nitk.authservice.dto.UserDTO;
+import org.nitk.authservice.dto.UserRole;
 import org.springframework.stereotype.Service;
 import org.nitk.common.mongo.MongoCollections;
 
@@ -73,5 +74,20 @@ public class AuthService {
                 .limit(1)
                 .fetchOne();
         return rec != null ? rec.get("id", Long.class) : null;
+    }
+
+    public String findUserRoleById(Long userId) {
+        if (userId == null) return null;
+
+       Record rec = dsl.select(field("role"))
+                .from(table("users"))
+                .where(field("id", Long.class).eq(userId))
+                .orderBy(field("id").desc())
+                .limit(1)
+                .fetchOne();
+
+        if (rec == null) return null;
+        Object roleObj = rec.get(0);
+        return roleObj != null ? roleObj.toString() : null;
     }
 }

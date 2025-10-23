@@ -28,7 +28,7 @@ public class AuthController {
         String msg = authService.signup(user);
         Long userId = authService.findUserIdByEmail(user.getEmail());
         if (userId != null) {
-            String token = createJwt(userId, user.getEmail());
+            String token = createJwt(userId, user.getEmail(), user.getRole().name());
             ResponseCookie cookie = buildJwtCookie(token);
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(msg);
         }
@@ -39,18 +39,21 @@ public class AuthController {
     public ResponseEntity<String> signIn(@RequestBody UserDTO user) {
         Long userId = authService.findUserIdByEmailAndPassword(user.getEmail(), user.getPassword());
         if (userId != null) {
-            String token = createJwt(userId, user.getEmail());
+            String role = authService.findUserRoleById(userId);
+            String token = createJwt(userId, user.getEmail(), role);
             ResponseCookie cookie = buildJwtCookie(token);
+            System.out.println("User " + user.getEmail() + " signed in with role " + role);
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Signin successful");
         }
         return ResponseEntity.status(401).body("Invalid credentials");
     }
 
-    private String createJwt(Long userId, String email) {
+    private String createJwt(Long userId, String email, String role) {
         com.auth0.jwt.algorithms.Algorithm alg = com.auth0.jwt.algorithms.Algorithm.HMAC256(jwtSecret);
         return com.auth0.jwt.JWT.create()
                 .withClaim("id", userId)
                 .withClaim("email", email)
+                .withClaim("role", role)
                 .sign(alg);
     }
 
