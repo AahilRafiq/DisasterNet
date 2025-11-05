@@ -22,6 +22,7 @@
         <module>gateway</module>
         <module>common</module>
         <module>alert-service</module>
+        <module>request-service</module>
         <module>notif-worker</module>
     </modules>
 

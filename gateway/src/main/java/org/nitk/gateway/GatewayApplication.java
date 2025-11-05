@@ -20,6 +20,7 @@ public class GatewayApplication {
 
     public static final String AUTH_URI = "http://localhost:5001";
     public static final String ALERT_URI = "http://localhost:5002";
+    public static final String REQUEST_URI = "http://localhost:5003";
 
     public static void main(String[] args) {
         SpringApplication.run(GatewayApplication.class, args);
@@ -51,5 +52,19 @@ public class GatewayApplication {
         Cookie jwtCookie = req.cookies().getFirst("jwt");
         String token = jwtCookie != null ? jwtCookie.getValue() : null;
         return jwtService.isValid(token);
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> requestRouter(JwtService jwtService) {
+        return route()
+                .route(path("/requests/**"), http())
+                .filter((req, next) -> {
+                    if (!isValidToken(req, jwtService)) {
+                        return ServerResponse.status(401).build();
+                    }
+                    return next.handle(req);
+                })
+                .before(uri(REQUEST_URI))
+                .build();
     }
 }
