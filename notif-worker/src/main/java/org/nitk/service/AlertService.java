@@ -1,7 +1,7 @@
-package service;
+package org.nitk.service;
 
 import com.mongodb.client.model.Filters;
-import helpers.AppContext;
+import org.nitk.helpers.AppContext;
 import org.bson.types.ObjectId;
 import org.nitk.common.dto.AlertDTO;
 import org.nitk.common.mongo.MongoCollections;

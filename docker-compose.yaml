@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   postgres:
     image: postgres
@@ -7,28 +8,79 @@ services:
       - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: password
+
   mongodb:
     image: mongo
     ports:
       - "27017:27017"
     volumes:
       - mongodb-data:/data/db
+
   rabbitmq:
     image: rabbitmq:management-alpine
     ports:
       - "5672:5672"
       - "15672:15672"
+
   mailhog:
     image: mailhog/mailhog
     ports:
       - "1025:1025"
       - "8025:8025"
+
   gateway:
     build: ./gateway
     ports:
       - "8080:8080"
     depends_on:
       - mongodb
+    environment:
+      - MONGO_HOST=mongodb
+      - AUTH_HOST=auth-service
+      - ALERT_HOST=alert-service
+      - REQUEST_HOST=request-service
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - postgres
+      - mongodb
+    environment:
+      - POSTGRES_HOST=postgres
+      - MONGO_HOST=mongodb
+
+  alert-service:
+    build: ./alert-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - MONGO_HOST=mongodb
+
+  request-service:
+    build: ./request-service
+    ports:
+      - "5003:5003"
+    depends_on:
+      - mongodb
+    environment:
+        - MONGO_HOST=mongodb
+
+  notif-worker:
+    build: ./notif-worker
+    depends_on:
+      - rabbitmq
+      - mailhog
+      - mongodb
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - SMTP_HOST=mailhog
+      - MONGO_HOST=mongodb
 
 volumes:
   postgres-data:

@@ -4,11 +4,11 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import helpers.AppContext;
+import org.nitk.helpers.AppContext;
 import org.nitk.common.dto.AlertDTO;
 import org.nitk.common.dto.AlertNotificationDTO;
-import service.AlertService;
-import service.EmailService;
+import org.nitk.service.AlertService;
+import org.nitk.service.EmailService;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -25,7 +25,11 @@ public class NotifWorker {
         ObjectMapper mapper = new ObjectMapper();
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        String rmqHost = System.getenv("RABBITMQ_HOST");
+        if (rmqHost == null || rmqHost.isEmpty()) {
+            rmqHost = "localhost";
+        }
+        factory.setHost(rmqHost);
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
