@@ -13,8 +13,8 @@ import javax.sql.DataSource;
 @Configuration
 public class JooqConfig {
 
-    @Value("${app.datasource.url}")
-    private String url;
+//    @Value("${app.datasource.url}")
+//    private String url;
 
     @Value("${app.datasource.username}")
     private String username;
@@ -29,9 +29,15 @@ public class JooqConfig {
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName(driverClassName);
-        ds.setUrl(url);
         ds.setUsername(username);
         ds.setPassword(password);
+
+        String host = System.getenv("POSTGRES_HOST");
+        if (host == null || host.isEmpty()) {
+            host = "localhost";
+        }
+        String url = "jdbc:postgresql://" + host + ":5432/postgres";
+        ds.setUrl(url);
         return ds;
     }
 

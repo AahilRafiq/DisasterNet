@@ -12,9 +12,13 @@ public class MongoConfig {
 
     @Bean
     public MongoClient mongoClient() {
+        String mongoHost = System.getenv("MONGO_HOST");
+        if(mongoHost == null || mongoHost.isEmpty()) {
+            mongoHost = "localhost";
+        }
         return MongoClients.create(
                 MongoClientSettings.builder()
-                        .applyConnectionString(new ConnectionString("mongodb://localhost:27017"))
+                        .applyConnectionString(new ConnectionString("mongodb://"+mongoHost+":27017"))
                         .build()
         );
     }
