@@ -41,6 +41,7 @@ export const demoAlerts: Alert[] = [
 // Demo resource requests data
 export const demoRequests: ResourceRequest[] = [
   {
+    id: 'r1',
     type: 'medical',
     description: 'Need medical assistance for elderly person with breathing difficulties',
     location: {
@@ -48,8 +49,10 @@ export const demoRequests: ResourceRequest[] = [
       coordinates: [-74.005, 40.7130]
     },
     status: 'pending',
+    citizenId: 101,
   },
   {
+    id: 'r2',
     type: 'food',
     description: 'Family of 4 needs food supplies, stranded due to flood',
     location: {
@@ -57,8 +60,11 @@ export const demoRequests: ResourceRequest[] = [
       coordinates: [-74.008, 40.7140]
     },
     status: 'assigned',
+    citizenId: 999, // another citizen
+    assignedVolunteerId: 201,
   },
   {
+    id: 'r3',
     type: 'shelter',
     description: 'Need temporary shelter, house damaged by flood',
     location: {
@@ -66,8 +72,10 @@ export const demoRequests: ResourceRequest[] = [
       coordinates: [-74.012, 40.7160]
     },
     status: 'completed',
+    citizenId: 101,
   },
   {
+    id: 'r4',
     type: 'water',
     description: 'Need clean drinking water, local supply contaminated',
     location: {
@@ -75,6 +83,7 @@ export const demoRequests: ResourceRequest[] = [
       coordinates: [-74.003, 40.7110]
     },
     status: 'pending',
+    citizenId: 555,
   }
 ];
 
@@ -85,7 +94,7 @@ export const demoUsers = {
     name: 'Emergency Coordinator',
     email: 'admin@disasternet.com',
     phone: '+1-555-0100',
-    role: 'AUTHORITY' as const,
+    role: 'authority' as const,
     location: {
       type: 'Point',
       coordinates: [-74.006, 40.7128] // New York City
@@ -114,4 +123,3 @@ export const demoUsers = {
     }
   }
 };
-

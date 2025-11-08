@@ -60,7 +60,7 @@ export const RequestList: React.FC<RequestListProps> = ({
   return (
     <div className="space-y-4">
       {requests.map((request) => (
-        <Card className="border-l-4 border-l-green-500">
+        <Card key={request.id} className="border-l-4 border-l-green-500">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-2">
@@ -77,7 +77,7 @@ export const RequestList: React.FC<RequestListProps> = ({
                 {showAssignButton && request.status === 'pending' && (
                   <Button 
                     size="sm" 
-                    // onClick={() => onAssign?.(request.id)}
+                    onClick={() => onAssign?.(request.id)}
                   >
                     Assign to Me
                   </Button>

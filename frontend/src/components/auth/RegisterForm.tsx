@@ -17,7 +17,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
     phone: '',
     password: '',
     confirmPassword: '',
-    role: 'citizen' as 'citizen' | 'volunteer' | 'AUTHORITY',
+    role: 'citizen' as 'citizen' | 'volunteer' | 'authority',
     location: {
       type: 'Point',
       coordinates: [0, 0] // Default coordinates
@@ -183,7 +183,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
             >
               <option value="citizen">Citizen</option>
               <option value="volunteer">Volunteer</option>
-              <option value="AUTHORITY">Authority/Admin</option>
+              <option value="authority">Authority/Admin</option>
             </select>
           </div>
           

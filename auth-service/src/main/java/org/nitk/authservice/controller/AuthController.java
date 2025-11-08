@@ -24,28 +24,28 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody UserDTO user) {
-        String msg = authService.signup(user);
-        Long userId = authService.findUserIdByEmail(user.getEmail());
+    public ResponseEntity<UserDTO> signUp(@RequestBody UserDTO user) {
+        Long userId = authService.signup(user);
         if (userId != null) {
-            String token = createJwt(userId, user.getEmail(), user.getRole().name());
+            UserDTO created = authService.getUserById(userId);
+            String token = createJwt(userId, created.getEmail(), created.getRole().name());
             ResponseCookie cookie = buildJwtCookie(token);
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(msg);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(created);
         }
-        return ResponseEntity.ok(msg);
+        return ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@RequestBody UserDTO user) {
+    public ResponseEntity<UserDTO> signIn(@RequestBody UserDTO user) {
         Long userId = authService.findUserIdByEmailAndPassword(user.getEmail(), user.getPassword());
         if (userId != null) {
-            String role = authService.findUserRoleById(userId);
-            String token = createJwt(userId, user.getEmail(), role);
+            UserDTO dto = authService.getUserById(userId);
+            String token = createJwt(userId, dto.getEmail(), dto.getRole().name());
             ResponseCookie cookie = buildJwtCookie(token);
-            System.out.println("User " + user.getEmail() + " signed in with role " + role);
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Signin successful");
+            System.out.println("User " + dto.getEmail() + " signed in with role " + dto.getRole().name());
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(dto);
         }
-        return ResponseEntity.status(401).body("Invalid credentials");
+        return ResponseEntity.status(401).build();
     }
 
     private String createJwt(Long userId, String email, String role) {

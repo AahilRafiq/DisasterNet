@@ -25,11 +25,12 @@ export const VolunteerDashboard: React.FC = () => {
       setLoading(true);
       const realAlerts = await fetchAlerts();
       setAlerts(realAlerts.length ? realAlerts : demoAlerts);
-      setRequests(demoRequests);
+      // Only show active (non-completed) requests for volunteers
+      setRequests(demoRequests.filter(r => r.status !== 'completed'));
     } catch (err) {
       setError('Failed to load data');
       setAlerts(demoAlerts);
-      setRequests(demoRequests);
+      setRequests(demoRequests.filter(r => r.status !== 'completed'));
     } finally {
       setLoading(false);
     }

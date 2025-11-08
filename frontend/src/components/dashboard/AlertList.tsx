@@ -6,9 +6,10 @@ import { Alert as AlertType } from '../../types/alert';
 
 interface AlertListProps {
   alerts: AlertType[];
+  onDelete?: (id: string) => void;
 }
 
-export const AlertList: React.FC<AlertListProps> = ({ alerts }) => {
+export const AlertList: React.FC<AlertListProps> = ({ alerts, onDelete }) => {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
@@ -47,9 +48,20 @@ export const AlertList: React.FC<AlertListProps> = ({ alerts }) => {
                 <AlertTriangle className="h-5 w-5 text-primary" />
                 <CardTitle className="text-lg">{alert.message}</CardTitle>
               </div>
-              <Badge className={getSeverityColor(alert.severity)}>
-                {alert.severity.toUpperCase()}
-              </Badge>
+              <div className="flex items-center space-x-2">
+                <Badge className={getSeverityColor(alert.severity)}>
+                  {alert.severity.toUpperCase()}
+                </Badge>
+                {onDelete && (
+                  <button
+                    aria-label="Delete alert"
+                    onClick={() => onDelete(alert.id)}
+                    className="text-red-600 text-sm hover:underline"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent className="pt-0">

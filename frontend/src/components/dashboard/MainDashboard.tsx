@@ -10,14 +10,14 @@ export const MainDashboard: React.FC = () => {
 
   const renderDashboard = () => {
     switch (user?.role) {
-      case 'AUTHORITY':
+      case 'authority':
         return <AdminDashboard />;
       case 'volunteer':
         return <VolunteerDashboard />;
       case 'citizen':
         return <CitizenDashboard />;
       default:
-        return <CitizenDashboard />;
+        return <div>No dashboard available</div>;
     }
   };
 

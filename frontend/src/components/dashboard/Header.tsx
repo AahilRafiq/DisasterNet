@@ -8,7 +8,7 @@ export const Header: React.FC = () => {
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case 'AUTHORITY':
+      case 'authority':
         return 'Admin';
       case 'volunteer':
         return 'Volunteer';

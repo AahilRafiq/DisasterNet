@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  role: 'citizen' | 'volunteer' | 'AUTHORITY';
+  role: 'citizen' | 'volunteer' | 'authority';
   location?: {
     type: string;
     coordinates: number[];
@@ -20,7 +20,7 @@ export interface RegisterRequest {
   email: string;
   phone: string;
   password: string;
-  role: 'citizen' | 'volunteer' | 'AUTHORITY';
+  role: 'citizen' | 'volunteer' | 'authority';
   location?: {
     type: string;
     coordinates: number[];

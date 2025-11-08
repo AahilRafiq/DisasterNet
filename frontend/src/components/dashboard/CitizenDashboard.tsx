@@ -8,7 +8,8 @@ import { ResourceRequest } from '../../types/request';
 import { CreateRequestModal } from './CreateRequestModal';
 import { AlertList } from './AlertList';
 import { RequestList } from './RequestList';
-import { demoAlerts } from '../../data/demoData';
+import { demoAlerts, demoRequests } from '../../data/demoData';
+import { useAuth } from '../../contexts/AuthContext';
 import api, { fetchAlerts } from '../../lib/api';
 
 export const CitizenDashboard: React.FC = () => {
@@ -17,21 +18,27 @@ export const CitizenDashboard: React.FC = () => {
   const [showCreateRequest, setShowCreateRequest] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const realAlerts = await fetchAlerts();
       setAlerts(realAlerts.length ? realAlerts : demoAlerts);
-      // Requests still demo / placeholder until backend implemented
-      // setRequests(demoRequests.filter(req => req.citizenId === 101));
+      // For now, use demo data filtered to the current user
+      if (user?.id) {
+        setRequests(demoRequests.filter(req => req.citizenId === user.id));
+      } else {
+        setRequests([]);
+      }
     } catch (err) {
       setError('Failed to load data');
       setAlerts(demoAlerts);
+      setRequests(user?.id ? demoRequests.filter(req => req.citizenId === user.id) : []);
     } finally {
       setLoading(false);
     }
@@ -39,16 +46,24 @@ export const CitizenDashboard: React.FC = () => {
 
   const handleCreateRequest = async (requestData: any) => {
     try {
-      // Make API call to create request
+      // Try API call first
       const response = await api.post('/requests', requestData);
-      console.log('Response:', response);
-      
-      // Backend generates ID and timestamps
-      const newRequest = response.data;
+      const newRequest = response.data as ResourceRequest;
       setRequests(prev => [newRequest, ...prev]);
       setShowCreateRequest(false);
     } catch (err) {
-      setError('Failed to create request');
+      // Fallback: simulate creation locally
+      const local: ResourceRequest = {
+        id: Date.now().toString(),
+        type: requestData.type,
+        description: requestData.description,
+        location: requestData.location,
+        status: 'pending',
+        citizenId: user?.id,
+        createdAt: new Date().toISOString(),
+      };
+      setRequests(prev => [local, ...prev]);
+      setShowCreateRequest(false);
     }
   };
 

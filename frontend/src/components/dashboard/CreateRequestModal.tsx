@@ -4,11 +4,11 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Alert, AlertDescription } from '../ui/alert';
 import { AlertTriangle, X } from 'lucide-react';
-import { ResourceRequest, CreateRequestRequest } from '../../types/request';
+import { CreateRequestRequest } from '../../types/request';
 
 interface CreateRequestModalProps {
   onClose: () => void;
-  onSubmit: (request: ResourceRequest) => void;
+  onSubmit: (request: CreateRequestRequest & { status: 'pending' }) => void;
 }
 
 export const CreateRequestModal: React.FC<CreateRequestModalProps> = ({ onClose, onSubmit }) => {
