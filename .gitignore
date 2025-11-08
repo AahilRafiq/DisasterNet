@@ -39,4 +39,4 @@ build/
 .DS_Store
 
 ### Ignore frontend for now ###
-frontend/
+frontend/node_modules/
