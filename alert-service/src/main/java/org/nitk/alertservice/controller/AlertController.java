@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
+
 @RestController
 public class AlertController {
 
@@ -34,6 +36,11 @@ public class AlertController {
         }
 
         return "Alert created successfully!";
+    }
+
+    @GetMapping("/alerts")
+    public List<AlertDTO> getAlerts() {
+        return alertService.getAllAlerts();
     }
 
 }

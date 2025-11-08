@@ -2,12 +2,17 @@ package org.nitk.alertservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
 import org.nitk.common.dto.AlertDTO;
 import org.nitk.common.dto.AlertNotificationDTO;
 import org.nitk.common.mongo.MongoCollections;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AlertService {
@@ -20,12 +25,21 @@ public class AlertService {
     }
 
     public String insertAlert(AlertDTO alert) {
+        // Set createdAt if not already set
+        if (alert.getCreatedAt() == null) {
+            alert.setCreatedAt(Instant.now());
+        }
+        // Set id to null to let MongoDB generate ObjectId
+        alert.setId(null);
+        
         InsertOneResult insertResult = mongoCollections.getAlertCollection().insertOne(alert);
         String alertId = null;
         if (insertResult.getInsertedId() != null) {
             var inserted = insertResult.getInsertedId();
             if (inserted.isObjectId()) {
                 alertId = inserted.asObjectId().getValue().toHexString();
+                // Set the id on the alert object
+                alert.setId(inserted.asObjectId().getValue());
             } else {
                 alertId = inserted.toString();
             }
@@ -68,5 +82,14 @@ public class AlertService {
             }
 
         });
+    }
+
+    public List<AlertDTO> getAllAlerts() {
+        FindIterable<AlertDTO> alerts = mongoCollections.getAlertCollection().find();
+        List<AlertDTO> alertList = new ArrayList<>();
+        for (AlertDTO alert : alerts) {
+            alertList.add(alert);
+        }
+        return alertList;
     }
 }
