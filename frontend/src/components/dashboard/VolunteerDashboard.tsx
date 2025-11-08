@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
 import { AlertTriangle, Users, MapPin, CheckCircle } from 'lucide-react';
@@ -8,7 +8,7 @@ import { ResourceRequest } from '../../types/request';
 import { AlertList } from './AlertList';
 import { RequestList } from './RequestList';
 import { demoAlerts, demoRequests } from '../../data/demoData';
-import api from '../../lib/api';
+import api, { fetchAlerts } from '../../lib/api';
 
 export const VolunteerDashboard: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
@@ -23,12 +23,13 @@ export const VolunteerDashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Using demo data for demonstration
-      // In production, this would be replaced with actual API calls
-      setAlerts(demoAlerts);
+      const realAlerts = await fetchAlerts();
+      setAlerts(realAlerts.length ? realAlerts : demoAlerts);
       setRequests(demoRequests);
     } catch (err) {
       setError('Failed to load data');
+      setAlerts(demoAlerts);
+      setRequests(demoRequests);
     } finally {
       setLoading(false);
     }
@@ -79,9 +80,6 @@ export const VolunteerDashboard: React.FC = () => {
             <Users className="h-5 w-5 text-green-600" />
             <span>Volunteer Dashboard</span>
           </CardTitle>
-          <CardDescription>
-            Help coordinate relief efforts and assist those in need
-          </CardDescription>
         </CardHeader>
       </Card>
 

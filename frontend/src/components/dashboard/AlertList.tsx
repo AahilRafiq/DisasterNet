@@ -64,11 +64,6 @@ export const AlertList: React.FC<AlertListProps> = ({ alerts }) => {
                 <Clock className="h-4 w-4" />
                 <span>{new Date(alert.createdAt).toLocaleString()}</span>
               </div>
-              {alert.distance && (
-                <div className="text-blue-600 font-medium">
-                  {Math.round(alert.distance / 1000)}km away
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>

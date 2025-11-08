@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
 import { AlertTriangle, Plus, MapPin, Users } from 'lucide-react';
@@ -9,6 +9,7 @@ import { CreateAlertModal } from './CreateAlertModal';
 import { AlertList } from './AlertList';
 import { RequestList } from './RequestList';
 import { demoAlerts, demoRequests } from '../../data/demoData';
+import { fetchAlerts } from '../../lib/api';
 
 export const AdminDashboard: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
@@ -24,18 +25,15 @@ export const AdminDashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Make API calls to get alerts and requests
-      // For now, using demo data but in production these would be real API calls
-      // const alertsResponse = await api.get('/alerts');
-      // const requestsResponse = await api.get('/requests');
-      // setAlerts(alertsResponse.data);
-      // setRequests(requestsResponse.data);
-      
-      // Using demo data for demonstration
-      setAlerts(demoAlerts);
+      // Fetch real alerts
+      const realAlerts = await fetchAlerts();
+      setAlerts(realAlerts.length ? realAlerts : demoAlerts); // fallback if empty
+      // Requests still demo for now
       setRequests(demoRequests);
     } catch (err) {
       setError('Failed to load data');
+      setAlerts(demoAlerts); // fallback on error
+      setRequests(demoRequests);
     } finally {
       setLoading(false);
     }
@@ -43,19 +41,14 @@ export const AdminDashboard: React.FC = () => {
 
   const handleCreateAlert = async (alertData: any) => {
     try {
-      // Make API call to create alert
-      // const response = await api.post('/alerts/new', alertData);
-      // const newAlert = response.data;
-      
-      // For demo purposes, simulate the response
+      // TODO: Replace with real API call (e.g., await api.post('/alerts/new', payload))
       const newAlert: AlertType = {
-        id: Date.now().toString(), // This would come from backend
+        id: Date.now().toString(),
         message: alertData.message,
-        severity: alertData.severity,
+        severity: alertData.severity.toLowerCase(),
         location: alertData.location,
-        createdAt: new Date().toISOString() // This would come from backend
+        createdAt: new Date().toISOString()
       };
-      
       setAlerts(prev => [newAlert, ...prev]);
       setShowCreateAlert(false);
     } catch (err) {

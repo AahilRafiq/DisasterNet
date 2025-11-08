@@ -28,5 +28,18 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+// Fetch alerts from backend and normalize to frontend Alert shape
+export async function fetchAlerts() {
+  const { data } = await api.get('/alerts');
+  // Normalize severity to lowercase for UI styling consistency
+  return (Array.isArray(data) ? data : []).map((a: any) => ({
+    id: a.id,
+    message: a.message,
+    severity: (a.severity || 'low').toLowerCase(),
+    location: a.location || { type: 'Point', coordinates: [0, 0] },
+    distance: a.distance ?? undefined,
+    createdAt: a.createdAt || new Date().toISOString(),
+  }));
+}
 
+export default api;

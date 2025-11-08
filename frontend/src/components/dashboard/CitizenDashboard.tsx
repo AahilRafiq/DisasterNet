@@ -8,8 +8,8 @@ import { ResourceRequest } from '../../types/request';
 import { CreateRequestModal } from './CreateRequestModal';
 import { AlertList } from './AlertList';
 import { RequestList } from './RequestList';
-import { demoAlerts, demoRequests } from '../../data/demoData';
-import api from '../../lib/api';
+import { demoAlerts } from '../../data/demoData';
+import api, { fetchAlerts } from '../../lib/api';
 
 export const CitizenDashboard: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
@@ -25,14 +25,13 @@ export const CitizenDashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Using demo data for demonstration
-      // In production, this would be replaced with actual API calls
-      const response = await api.get('/alerts');
-      console.log('Response:', response);
-      setAlerts(demoAlerts);
-      // setRequests(demoRequests.filter(req => req.citizenId === 101)); // Filter for current user
+      const realAlerts = await fetchAlerts();
+      setAlerts(realAlerts.length ? realAlerts : demoAlerts);
+      // Requests still demo / placeholder until backend implemented
+      // setRequests(demoRequests.filter(req => req.citizenId === 101));
     } catch (err) {
       setError('Failed to load data');
+      setAlerts(demoAlerts);
     } finally {
       setLoading(false);
     }
