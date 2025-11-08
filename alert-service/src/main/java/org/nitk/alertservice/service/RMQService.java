@@ -12,7 +12,11 @@ public class RMQService {
 
     public RMQService() {
         factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        String rmqHost = System.getenv("RABBITMQ_HOST");
+        if (rmqHost == null || rmqHost.isEmpty()) {
+            rmqHost = "localhost";
+        }
+        factory.setHost(rmqHost);
     }
 
     public void publishNotification(byte[] message) {

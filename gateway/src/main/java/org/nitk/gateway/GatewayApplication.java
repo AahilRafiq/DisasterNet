@@ -15,12 +15,21 @@ import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouter
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
 import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequestPredicates.path;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+        org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration.class
+})
 public class GatewayApplication {
 
-    public static final String AUTH_URI = "http://localhost:5001";
-    public static final String ALERT_URI = "http://localhost:5002";
-    public static final String REQUEST_URI = "http://localhost:5003";
+    // Resolve downstream service hosts from environment with localhost fallback
+    private static String host(String env, String fallback) {
+        String v = System.getenv(env);
+        return (v == null || v.isBlank()) ? fallback : v;
+    }
+
+    public static final String AUTH_URI = "http://" + host("AUTH_HOST", "localhost") + ":5001";
+    public static final String ALERT_URI = "http://" + host("ALERT_HOST", "localhost") + ":5002";
+    public static final String REQUEST_URI = "http://" + host("REQUEST_HOST", "localhost") + ":5003";
 
     public static void main(String[] args) {
         SpringApplication.run(GatewayApplication.class, args);

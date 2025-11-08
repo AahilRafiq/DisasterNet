@@ -1,4 +1,4 @@
-package service;
+package org.nitk.service;
 
 import org.nitk.common.dto.AlertDTO;
 import org.nitk.common.dto.AlertNotificationDTO;
@@ -13,8 +13,12 @@ public class EmailService {
     private final Mailer mailer;
 
     public EmailService() {
+        String smtpHost = System.getenv("SMTP_HOST");
+        if(smtpHost == null || smtpHost.isEmpty()) {
+            smtpHost = "localhost";
+        }
         this.mailer = MailerBuilder
-                .withSMTPServer("localhost", 1025)
+                .withSMTPServer(smtpHost, 1025)
                 .buildMailer();
     }
 

@@ -1,12 +1,12 @@
-package helpers;
+package org.nitk.helpers;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.nitk.common.mongo.MongoCollections;
-import service.AlertService;
-import service.EmailService;
+import org.nitk.service.AlertService;
+import org.nitk.service.EmailService;
 
 public class AppContext {
     private static AppContext instance = null;
@@ -39,9 +39,13 @@ public class AppContext {
 
     // Helper methods...........................
     private static MongoClient createMongoClient() {
+        String mongoHost = System.getenv("MONGO_HOST");
+        if (mongoHost == null || mongoHost.isEmpty()) {
+            mongoHost = "localhost";
+        }
         return MongoClients.create(
                 MongoClientSettings.builder()
-                        .applyConnectionString(new ConnectionString("mongodb://localhost:27017"))
+                        .applyConnectionString(new ConnectionString("mongodb://"+mongoHost+":27017"))
                         .build()
         );
     }
