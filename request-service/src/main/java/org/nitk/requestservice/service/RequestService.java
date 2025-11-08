@@ -1,8 +1,12 @@
 package org.nitk.requestservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.InsertOneResult;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.nitk.common.dto.ResourceRequestDTO;
+import org.nitk.common.dto.RequestNotificationDTO;
 import org.nitk.common.mongo.MongoCollections;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +20,12 @@ import static com.mongodb.client.model.Filters.eq;
 public class RequestService {
 
     private final MongoCollections mongoCollections;
+    private final RMQService rmqService;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    public RequestService(MongoCollections mongoCollections) {
+    public RequestService(MongoCollections mongoCollections, RMQService rmqService) {
         this.mongoCollections = mongoCollections;
+        this.rmqService = rmqService;
     }
 
     // Create a new resource request
@@ -30,10 +37,40 @@ public class RequestService {
 
         // Insert into MongoDB
         InsertOneResult result = mongoCollections.getRequestCollection().insertOne(request);
+        String requestId = null;
         if (result.getInsertedId() != null && result.getInsertedId().isObjectId()) {
             request.setId(result.getInsertedId().asObjectId().getValue());
+            requestId = result.getInsertedId().asObjectId().getValue().toHexString();
+        }
+
+        // Publish notifications to all volunteers
+        if (requestId != null) {
+            publishNotificationsToVolunteers(requestId);
         }
         return request;
+    }
+
+    private void publishNotificationsToVolunteers(String requestId) {
+        var volunteers = mongoCollections.getUserCollection().find(
+                new Document("role", new Document("$in", List.of("volunteer", "VOLUNTEER")))
+        );
+        volunteers.forEach(doc -> {
+            Number userIdNum = doc.get("userId", Number.class);
+            Long userId = userIdNum != null ? userIdNum.longValue() : null;
+
+            RequestNotificationDTO dto = new RequestNotificationDTO();
+            dto.setUserId(userId);
+            dto.setEmail(doc.getString("email"));
+            dto.setPhone(doc.getString("phone"));
+            dto.setRole(doc.getString("role"));
+            dto.setRequestId(requestId);
+            try {
+                byte[] messageData = mapper.writeValueAsBytes(dto);
+                rmqService.publishNotification(messageData);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     // Fetch request by ID
@@ -54,8 +91,6 @@ public class RequestService {
     public boolean assignVolunteer(String requestId, Long volunteerId) {
 
 
-
-        // Only volunteer can be assigned
 
         // Only assign if request is still pending
 

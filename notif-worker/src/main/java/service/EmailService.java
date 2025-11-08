@@ -2,6 +2,8 @@ package service;
 
 import org.nitk.common.dto.AlertDTO;
 import org.nitk.common.dto.AlertNotificationDTO;
+import org.nitk.common.dto.RequestNotificationDTO;
+import org.nitk.common.dto.ResourceRequestDTO;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;
@@ -25,6 +27,20 @@ public class EmailService {
                         "\nPlease take necessary actions.\n\nRegards,\nAlert System")
                 .buildEmail();
 
+        mailer.sendMail(email);
+    }
+
+    public void sendRequestEmail(RequestNotificationDTO notif, ResourceRequestDTO request) {
+        String type = request != null ? request.getType() : "Request";
+        String desc = request != null ? request.getDescription() : "";
+        Email email = EmailBuilder.startingBlank()
+                .from("DisasterNet", "disasternet@server.com")
+                .to("Volunteer", notif.getEmail())
+                .withSubject("New Resource Request: " + type)
+                .withPlainText("A new resource request has been created.\n\nType: " + type +
+                        "\nDescription: " + desc +
+                        "\n\nPlease check the system to assist.\n\nRegards,\nDisasterNet")
+                .buildEmail();
         mailer.sendMail(email);
     }
 }
