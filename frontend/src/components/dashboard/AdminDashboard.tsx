@@ -7,7 +7,7 @@ import { Alert as AlertType } from '../../types/alert';
 import { CreateAlertModal } from './CreateAlertModal';
 import { AlertList } from './AlertList';
 import { demoAlerts } from '../../data/demoData';
-import { fetchAlerts } from '../../lib/api';
+import { fetchAlerts, createNewAlert } from '../../lib/api';
 
 export const AdminDashboard: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
@@ -41,6 +41,7 @@ export const AdminDashboard: React.FC = () => {
         location: alertData.location,
         createdAt: new Date().toISOString()
       };
+      await createNewAlert(newAlert);
       setAlerts(prev => [newAlert, ...prev]);
       setShowCreateAlert(false);
     } catch (err) {

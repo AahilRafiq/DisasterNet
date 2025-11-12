@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Alert as AlertType } from '../types/alert';
 
 const API_BASE_URL = 'http://localhost:8080'; // Gateway URL
 
@@ -40,6 +41,17 @@ export async function fetchAlerts() {
     distance: a.distance ?? undefined,
     createdAt: a.createdAt || new Date().toISOString(),
   }));
+}
+
+export async function createNewAlert(alert: AlertType) {
+    const payload = {
+        message: alert.message,
+        severity: alert.severity,
+        location: alert.location,
+        distance: 1000
+    };
+    const { data } = await api.post('/alerts/new', payload);
+    return data;
 }
 
 // Fetch open resource requests for volunteers
