@@ -7,10 +7,12 @@ import { Alert as AlertType } from '../../types/alert';
 import { ResourceRequest } from '../../types/request';
 import { AlertList } from './AlertList';
 import { RequestList } from './RequestList';
-import { demoAlerts, demoRequests } from '../../data/demoData';
-import api, { fetchAlerts } from '../../lib/api';
+import { demoAlerts } from '../../data/demoData';
+import api, { fetchAlerts, fetchOpenRequests } from '../../lib/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const VolunteerDashboard: React.FC = () => {
+  const { user } = useAuth();
   const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [requests, setRequests] = useState<ResourceRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +20,7 @@ export const VolunteerDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchData = async () => {
@@ -25,30 +28,35 @@ export const VolunteerDashboard: React.FC = () => {
       setLoading(true);
       const realAlerts = await fetchAlerts();
       setAlerts(realAlerts.length ? realAlerts : demoAlerts);
-      // Only show active (non-completed) requests for volunteers
-      setRequests(demoRequests.filter(r => r.status !== 'completed'));
+
+      // Load open (pending) requests from backend
+      const openRequests = await fetchOpenRequests();
+      setRequests(openRequests);
     } catch (err) {
       setError('Failed to load data');
       setAlerts(demoAlerts);
-      setRequests(demoRequests.filter(r => r.status !== 'completed'));
+      setRequests([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleAssignRequest = async (requestId: string) => {
-    try {
-      // API call to assign request to current volunteer
-      const response = await api.patch(`/requests/${requestId}/assign`, { volunteerId: 1 }); // user.id from auth context
-      console.log('Assignment response:', response);
-      
-      // Backend updates the request and returns updated data
-      const updatedRequest = response.data;
-      // setRequests(prev => 
-      //   prev.map(req => 
-      //     req.id === requestId ? updatedRequest : req
-      //   )
-      // );
+    console.log("this is",requests);
+      try {
+      if (!user) throw new Error('Not authenticated');
+      // Only volunteers and authorities can assign; basic guard on client
+      if (user.role !== 'volunteer' && user.role !== 'authority') {
+        throw new Error('Insufficient permissions');
+      }
+
+      // Send volunteerId as query param as expected by backend
+      await api.patch(`/requests/${requestId}/assign`, null, {
+        params: { volunteerId: user.id },
+      });
+
+      // Refresh list (assigned request will no longer be in open list)
+      await fetchData();
     } catch (err) {
       setError('Failed to assign request');
     }
@@ -118,7 +126,7 @@ export const VolunteerDashboard: React.FC = () => {
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold">{requests.filter(r => r.assignedVolunteerId === 1).length}</div> */}
+            {/* Optional: could show assigned count if an endpoint exists */}
             <p className="text-xs text-muted-foreground">
               Your assigned requests
             </p>

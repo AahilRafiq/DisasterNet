@@ -1,5 +1,6 @@
 package org.nitk.requestservice.controller;
 
+import org.nitk.common.dto.ResourceRequestPlainDTO;
 import org.nitk.requestservice.service.RequestService;
 import org.nitk.common.dto.ResourceRequestDTO;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,8 @@ public class RequestController {
 
     // List open requests
     @GetMapping("/open")
-    public ResponseEntity<List<ResourceRequestDTO>> getOpenRequests() {
-        List<ResourceRequestDTO> openRequests = requestService.getOpenRequests();
+    public ResponseEntity<List<ResourceRequestPlainDTO>> getOpenRequests() {
+        List<ResourceRequestPlainDTO> openRequests = requestService.getOpenRequests();
         return ResponseEntity.ok(openRequests);
     }
 

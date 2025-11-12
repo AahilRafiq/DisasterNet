@@ -42,4 +42,32 @@ export async function fetchAlerts() {
   }));
 }
 
+// Fetch open resource requests for volunteers
+export async function fetchOpenRequests() {
+  const { data } = await api.get('/requests/open');
+  const list = Array.isArray(data) ? data : [];
+  return list.map((r: any) => {
+    // Normalize possible ObjectId shapes to string id
+    let id: string = r.id;
+    if (!id && r._id) {
+      if (typeof r._id === 'string') id = r._id;
+      else if (r._id.$oid) id = r._id.$oid;
+    }
+
+    // Ensure location exists
+    const location = r.location || { type: 'Point', coordinates: [0, 0] };
+
+    return {
+      id,
+      type: (r.type || 'other').toLowerCase(),
+      status: (r.status || 'pending').toLowerCase(),
+      description: r.description || '',
+      citizenId: r.citizenId ?? undefined,
+      assignedVolunteerId: r.assignedVolunteerId ?? undefined,
+      location,
+      createdAt: r.createdAt || undefined,
+    } as import('../types/request').ResourceRequest;
+  });
+}
+
 export default api;

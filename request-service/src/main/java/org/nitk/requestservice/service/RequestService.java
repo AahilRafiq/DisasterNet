@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.nitk.common.dto.ResourceRequestDTO;
 import org.nitk.common.dto.RequestNotificationDTO;
+import org.nitk.common.dto.ResourceRequestPlainDTO;
 import org.nitk.common.mongo.MongoCollections;
 import org.springframework.stereotype.Service;
 
@@ -80,11 +81,25 @@ public class RequestService {
     }
 
     // List all open requests
-    public List<ResourceRequestDTO> getOpenRequests() {
+    public List<ResourceRequestPlainDTO> getOpenRequests() {
         List<ResourceRequestDTO> openRequests = new ArrayList<>();
         mongoCollections.getRequestCollection().find(eq("status", "pending"))
                 .into(openRequests);
-        return openRequests;
+        List<ResourceRequestPlainDTO> plainDTOS = new ArrayList<>();
+        for (ResourceRequestDTO dto : openRequests) {
+            ResourceRequestPlainDTO plainDTO = new ResourceRequestPlainDTO();
+            plainDTO.setId(dto.getId());
+            plainDTO.setCitizenId(dto.getCitizenId());
+            plainDTO.setType(dto.getType());
+            plainDTO.setDescription(dto.getDescription());
+            plainDTO.setLocation(dto.getLocation());
+            plainDTO.setStatus(dto.getStatus());
+            plainDTO.setAssignedVolunteerId(dto.getAssignedVolunteerId());
+            plainDTO.setCreatedAt(dto.getCreatedAt());
+            plainDTO.setUpdatedAt(dto.getUpdatedAt());
+            plainDTOS.add(plainDTO);
+        }
+        return plainDTOS;
     }
 
     // Assign a volunteer
