@@ -19,4 +19,6 @@ export interface CreateRequestRequest {
     type: string;
     coordinates: number[];
   };
+  // Include the creator's id when available
+  citizenId?: number;
 }

@@ -10,7 +10,7 @@ import { AlertList } from './AlertList';
 import { RequestList } from './RequestList';
 import { demoAlerts, demoRequests } from '../../data/demoData';
 import { useAuth } from '../../contexts/AuthContext';
-import api, { fetchAlerts } from '../../lib/api';
+import api, { fetchAlerts, fetchOpenRequests } from '../../lib/api';
 
 export const CitizenDashboard: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertType[]>([]);
@@ -25,16 +25,13 @@ export const CitizenDashboard: React.FC = () => {
   }, [user]);
 
   const fetchData = async () => {
-    try {
+      try {
       setLoading(true);
       const realAlerts = await fetchAlerts();
+      const openRequests = await fetchOpenRequests();
       setAlerts(realAlerts.length ? realAlerts : demoAlerts);
-      // For now, use demo data filtered to the current user
-      if (user?.id) {
-        setRequests(demoRequests.filter(req => req.citizenId === user.id));
-      } else {
-        setRequests([]);
-      }
+      const realUserRequests = openRequests.filter(req => req.citizenId === user?.id);
+      setRequests(realUserRequests)
     } catch (err) {
       setError('Failed to load data');
       setAlerts(demoAlerts);
@@ -46,8 +43,11 @@ export const CitizenDashboard: React.FC = () => {
 
   const handleCreateRequest = async (requestData: any) => {
     try {
+      // Include the creator's id in the request body
+      const payload = { ...requestData, citizenId: user?.id };
+
       // Try API call first
-      const response = await api.post('/requests', requestData);
+      const response = await api.post('/requests', payload);
       const newRequest = response.data as ResourceRequest;
       setRequests(prev => [newRequest, ...prev]);
       setShowCreateRequest(false);

@@ -32,6 +32,7 @@ public class RequestService {
     // Create a new resource request
     public ResourceRequestDTO createRequest(ResourceRequestDTO request) {
         request.setCreatedAt(Instant.now());
+        request.setCitizenId(request.getCitizenId());
         request.setUpdatedAt(Instant.now());
         request.setStatus("pending");
         request.setId(null); // Always set to null to let MongoDB generate ObjectId
