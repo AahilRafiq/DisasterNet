@@ -9,7 +9,7 @@ import org.nitk.common.dto.AlertDTO;
 import org.nitk.common.dto.AlertNotificationDTO;
 import org.nitk.common.dto.RequestNotificationDTO;
 import org.nitk.common.dto.ResourceRequestDTO;
-import service.RequestService;
+import org.nitk.service.RequestService;
 import org.nitk.service.AlertService;
 import org.nitk.service.EmailService;
 import tools.jackson.databind.ObjectMapper;
