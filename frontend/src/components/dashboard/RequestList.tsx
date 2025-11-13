@@ -87,12 +87,12 @@ export const RequestList: React.FC<RequestListProps> = ({
           </CardHeader>
           <CardContent className="pt-0">
             <div className="flex items-center space-x-4 text-sm text-gray-600">
-              <div className="flex items-center space-x-1">
-                <MapPin className="h-4 w-4" />
-                <span>
-                  {request.location.coordinates[1].toFixed(4)}, {request.location.coordinates[0].toFixed(4)}
-                </span>
-              </div>
+              {/*<div className="flex items-center space-x-1">*/}
+              {/*  <MapPin className="h-4 w-4" />*/}
+              {/*  <span>*/}
+              {/*    {request.location.coordinates[1].toFixed(4)}, {request.location.coordinates[0].toFixed(4)}*/}
+              {/*  </span>*/}
+              {/*</div>*/}
               {/* {request.assignedVolunteerId && (
                 <div className="flex items-center space-x-1">
                   <User className="h-4 w-4" />

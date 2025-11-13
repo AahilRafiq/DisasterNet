@@ -53,6 +53,7 @@ services:
 
   alert-service:
     build: ./alert-service
+    restart: always
     ports:
       - "5002:5002"
     depends_on:
@@ -73,6 +74,7 @@ services:
 
   notif-worker:
     build: ./notif-worker
+    restart: always
     depends_on:
       - rabbitmq
       - mailhog
