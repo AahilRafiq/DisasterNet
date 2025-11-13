@@ -71,9 +71,9 @@ export const RequestList: React.FC<RequestListProps> = ({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge className={getStatusColor(request.status)}>
-                  {request.status.toUpperCase()}
-                </Badge>
+                {/*<Badge className={getStatusColor(request.status)}>*/}
+                {/*  {request.status.toUpperCase()}*/}
+                {/*</Badge>*/}
                 {showAssignButton && request.status === 'pending' && (
                   <Button 
                     size="sm" 

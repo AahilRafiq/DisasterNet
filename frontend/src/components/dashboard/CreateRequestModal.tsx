@@ -23,54 +23,28 @@ export const CreateRequestModal: React.FC<CreateRequestModalProps> = ({ onClose,
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
 
-    try {
-      // Get user's current location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
+        try {
             const requestData = {
-              type: formData.type,
-              description: formData.description,
-              status: 'pending' as const,
-              location: {
-                type: 'Point',
-                coordinates: [position.coords.longitude, position.coords.latitude]
-              }
+                type: formData.type,
+                description: formData.description,
+                status: 'pending' as const,
+                location: formData.location // Uses the location from state/props instead of GPS
             };
+
+            // Assuming onSubmit might be async since the function is async
             onSubmit(requestData);
-          },
-          () => {
-            // Fallback to default coordinates if geolocation fails
-            const requestData = {
-              type: formData.type,
-              description: formData.description,
-              status: 'pending' as const,
-              location: formData.location
-            };
-            onSubmit(requestData);
-          }
-        );
-      } else {
-        // Fallback if geolocation is not supported
-        const requestData = {
-          type: formData.type,
-          description: formData.description,
-          status: 'pending' as const,
-          location: formData.location
-        };
-        onSubmit(requestData);
-      }
-    } catch (err) {
-      setError('Failed to create request');
-    } finally {
-      setLoading(false);
-    }
-  };
+
+        } catch (err) {
+            setError('Failed to create request');
+        } finally {
+            setLoading(false);
+        }
+    };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({

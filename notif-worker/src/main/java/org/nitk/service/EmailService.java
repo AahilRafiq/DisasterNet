@@ -25,7 +25,7 @@ public class EmailService {
     public void sendEmail(AlertNotificationDTO notif, AlertDTO alert) {
         Email email = EmailBuilder.startingBlank()
                 .from("DisasterNet", "disasternet@server.com")
-                .to("some user", notif.getEmail())
+                .to(notif.getEmail().substring(0,notif.getEmail().indexOf('@')), notif.getEmail())
                 .withSubject("Alert : " + alert.getSeverity())
                 .withPlainText("This is to notify you about alert: " + alert.getMessage() +
                         "\nPlease take necessary actions.\n\nRegards,\nAlert System")

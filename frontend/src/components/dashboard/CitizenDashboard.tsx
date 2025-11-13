@@ -42,7 +42,7 @@ export const CitizenDashboard: React.FC = () => {
   };
 
   const handleCreateRequest = async (requestData: any) => {
-    try {
+      try {
       // Include the creator's id in the request body
       const payload = { ...requestData, citizenId: user?.id };
 
